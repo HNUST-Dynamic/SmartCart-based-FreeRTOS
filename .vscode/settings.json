@@ -1,0 +1,15 @@
+{
+    "files.associations": {
+        "delay.h": "c",
+        "l610.h": "c",
+        "lcd.h": "c",
+        "pages.h": "c",
+        "ch32v30x.h": "c",
+        "sys.h": "c",
+        "freertos_demo.h": "c",
+        "usart.h": "c",
+        "ctype.h": "c",
+        "hx77.h": "c",
+        "freertos.h": "c"
+    }
+}
