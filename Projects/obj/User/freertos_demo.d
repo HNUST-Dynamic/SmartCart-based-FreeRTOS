@@ -47,7 +47,9 @@ User/freertos_demo.o: F:/SmartCartRTOS/User/freertos_demo.c \
  F:\SmartCartRTOS\Middlewares\FreeRTOS\include/queue.h \
  F:/SmartCartRTOS/User/pages.h F:/SmartCartRTOS/User/L610.h \
  f:\smartcartrtos\drivers\system\usart\usart.h \
- F:/SmartCartRTOS/User/structures.h
+ F:/SmartCartRTOS/User/structures.h F:/SmartCartRTOS/User/allshow.h \
+ F:/SmartCartRTOS/User/HX77.h F:/SmartCartRTOS/User/system_ch32v30x.h \
+ f:\smartcartrtos\drivers\system\sys\sys.h
 
 F:/SmartCartRTOS/User/freertos_demo.h:
 
@@ -148,3 +150,11 @@ F:/SmartCartRTOS/User/L610.h:
 f:\smartcartrtos\drivers\system\usart\usart.h:
 
 F:/SmartCartRTOS/User/structures.h:
+
+F:/SmartCartRTOS/User/allshow.h:
+
+F:/SmartCartRTOS/User/HX77.h:
+
+F:/SmartCartRTOS/User/system_ch32v30x.h:
+
+f:\smartcartrtos\drivers\system\sys\sys.h:

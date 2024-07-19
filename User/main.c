@@ -12,15 +12,14 @@ int main(void)
 {
     NVIC_PriorityGroupConfig(NVIC_PriorityGroup_4);     /* 中断优先级分组2 */
     delay_init(144);                                    /* 延时初始化 */
-    USARTx_Init();                                 /* 串口初始化为115200 */
-    //my_mem_init(SRAMIN);                                /* 初始化内部SRAM内存池 */
+    USARTx_Init();                                      /* 串口初始化 */
+    key_init();                                         /*按键初始化*/
 
     LCD_Reset_GPIO_Init();                              /*初始化LCD*/
     GPIO_ResetBits(GPIOA,GPIO_Pin_15);
     delay_ms(100);
     GPIO_SetBits(GPIOA,GPIO_Pin_15);
     LCD_Init();
-    
    
     freertos_demo();                                    /* 运行FreeRTOS */
 }

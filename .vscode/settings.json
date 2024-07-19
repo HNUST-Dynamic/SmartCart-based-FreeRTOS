@@ -10,6 +10,7 @@
         "usart.h": "c",
         "ctype.h": "c",
         "hx77.h": "c",
-        "freertos.h": "c"
+        "freertos.h": "c",
+        "allshow.h": "c"
     }
 }

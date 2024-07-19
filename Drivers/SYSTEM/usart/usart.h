@@ -41,8 +41,14 @@ extern volatile u8 recv_ok ;       //接收完成标志
 extern u8 uart_buf[32];  //用于保存串口数据
 extern volatile u8 uart_cnt ;        //用于定位串口数据的位置
 extern volatile u8 L610_Flag;
-extern QueueHandle_t xQueue;
-extern SemaphoreHandle_t xSemaphore;
+extern QueueHandle_t xQueue2;
+extern QueueHandle_t xQueue1;
+extern QueueHandle_t xQueue3;//用于摄像头和按键任务之间传递product的队列
+extern QueueHandle_t xQueue4;//用于发送上报后获取的product给weightcheck
+extern SemaphoreHandle_t xBinarySemaphore;//创建摄像头与按键扫描直接所用的二值信号量句柄
+extern SemaphoreHandle_t xBinarySemaphore2;//创建上报后和weightcheck联系的二值信号量句柄
+extern SemaphoreHandle_t xBinarySemaphore3;//创建扫描后页面与重量错误的同步二值信号量句柄
+extern SemaphoreHandle_t xBinarySemaphore4;//创建显示重量错误与切回主页面的同步二值信号量句柄
 
 void USARTx_Init(void);
 void USART1_IRQHandler(void);

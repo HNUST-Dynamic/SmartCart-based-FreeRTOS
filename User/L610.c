@@ -149,6 +149,7 @@ void L610_SetAndConnect()
         if(strx==NULL)
         {
             printf("连接失败\n");
+            vTaskDelay(1000);
             printf("AT+TCMQTTCONN=1,20000,240,1,1\r\n");
             strx=strstr((const char*)USART_Rbuffer,(const char*)"+TCMQTTCONN: OK");
 
@@ -245,7 +246,6 @@ ProductInfo L610_Recive()
     {
         if(USART_Rbuffer[0] != 0)
         {
-            vTaskDelay(1000);
 
             // 查找 productID
             strx = strstr((const char*)USART_Rbuffer, "ID");

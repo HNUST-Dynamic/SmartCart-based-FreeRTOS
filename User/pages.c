@@ -85,7 +85,7 @@ void Pages_X_add(ProductInfo product)
 
     LCD_Clear(BROWN);
     LCD_Color_Fill(200,120,600,240,LGRAY );
-    LCD_ShowString(200, 180, (strlen((const char *)product.productId))*BIGCHAR, 32, 32,(u8*) product.productId);
+    LCD_ShowString(200, 180, (strlen((const char *)product.productName))*BIGCHAR, 32, 32,(u8*) product.productName);
     char priceStr[MAX_STRING_LENGTH]; // 用于存储 productPrice 的字符串表示
     snprintf(priceStr, sizeof(priceStr), "%.2f", product.productPrices); // 将浮点数转换为字符串，保留两位小数
     LCD_ShowString(200, 200, 5*BIGCHAR, 32, 32,(u8*) priceStr);
@@ -115,12 +115,10 @@ void Pages_X_delete(ProductInfo product)
 
     LCD_Clear(WHITE);
     LCD_Color_Fill(200,120,600,240,LGRAY );
-    LCD_ShowString(200, 180, (strlen((const char *)product.productId))*BIGCHAR, 32, 32,(u8*) product.productId);
+    LCD_ShowString(200, 180, (strlen((const char *)product.productName))*BIGCHAR, 32, 32,(u8*) product.productName);
     char priceStr[MAX_STRING_LENGTH]; // 用于存储 productPrice 的字符串表示
     snprintf(priceStr, sizeof(priceStr), "%.2f", product.productPrices); // 将浮点数转换为字符串，保留两位小数
     LCD_ShowString(200, 200, 5*BIGCHAR, 32, 32,(u8*) priceStr);
-    delay_ms(4000);
-    renderMainPage();
 }
 
 //void Pages_Back()

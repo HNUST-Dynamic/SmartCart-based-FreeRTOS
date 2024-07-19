@@ -11,12 +11,17 @@
 volatile u8 recv_ok;       //接收完成标志
 u8 uart_buf[32]={0};  //用于保存串口数据
 volatile u8 uart_cnt =0;        //用于定位串口数据的位置
-uint16_t received_data;
+uint8_t received_data;
 volatile u8 L610_Flag=0;
 
-QueueHandle_t xQueue;
-SemaphoreHandle_t xSemaphore;
-
+QueueHandle_t xQueue1;
+QueueHandle_t xQueue2;
+QueueHandle_t xQueue3;//用于摄像头和按键任务之间传递product的队列
+QueueHandle_t xQueue4;//用于发送上报后获取的product给weightcheck
+SemaphoreHandle_t xBinarySemaphore;//创建摄像头与按键扫描直接所用的二值信号量句柄
+SemaphoreHandle_t xBinarySemaphore2;//创建上报后和weightcheck联系的二值信号量句柄
+SemaphoreHandle_t xBinarySemaphore3;//创建扫描后页面与重量错误的同步二值信号量句柄
+SemaphoreHandle_t xBinarySemaphore4;//创建显示重量错误与切回主页面的同步二值信号量句柄
 
 void USART1_IRQHandler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
 void USART2_IRQHandler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
@@ -115,27 +120,19 @@ __attribute__((used)) int _write(int fd, char *buf, int size)
 
 void USART1_IRQHandler(void)
 {
+    BaseType_t xHigherPriorityTaskWoken = pdFALSE;
+
     if (USART_GetITStatus(USART1, USART_IT_RXNE) != RESET) // 检查接收中断
        {
-           USART_ClearITPendingBit(USART1, USART_IT_RXNE); // 清除中断标志
-           received_data = USART_ReceiveData(USART1); // 接收数据
+            USART_ClearITPendingBit(USART1, USART_IT_RXNE); // 清除中断标志
+            uint8_t received_data_ISR = USART_ReceiveData(USART1); // 接收数据
+            // 从 ISR 中发送数据到队列
+            xQueueSendFromISR(xQueue1, &received_data_ISR, &xHigherPriorityTaskWoken);
 
-           if(isalpha(received_data))
-           {
-                if (uart_cnt < sizeof(uart_buf) / sizeof(uart_buf[0])) // 检查缓冲区溢出
-                {
-                    uart_buf[uart_cnt++] = received_data; // 将接收到的数据存储在缓冲区中
-                }
-           }
-           if(received_data=='\n') // 检查是否接收到换行符
-           {
-               uart_cnt = 0; // 重置缓冲区计数器
-               recv_ok=1;
-               numx =1;
-               USART_Cmd(USART1,DISABLE);
-           }
-
-       }
+            // 如果需要的话进行上下文切换
+            portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
+            
+       }    
 }
 
 void USART2_IRQHandler(void)
@@ -148,7 +145,7 @@ void USART2_IRQHandler(void)
         uint8_t receivedData = USART_ReceiveData(USART2); // 接收数据
         
         // 从 ISR 中发送数据到队列
-        xQueueSendFromISR(xQueue, &receivedData, &xHigherPriorityTaskWoken);
+        xQueueSendFromISR(xQueue2, &receivedData, &xHigherPriorityTaskWoken);
 
         // 如果需要的话进行上下文切换
         portYIELD_FROM_ISR(xHigherPriorityTaskWoken);

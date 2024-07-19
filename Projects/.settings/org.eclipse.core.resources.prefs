@@ -2,4 +2,5 @@ eclipse.preferences.version=1
 encoding//Drivers/SYSTEM/usart/usart.c=UTF-8
 encoding//User/L610.c=UTF-8
 encoding//User/L610.h=UTF-8
+encoding//User/freertos_demo.c=UTF-8
 encoding//User/main.c=UTF-8

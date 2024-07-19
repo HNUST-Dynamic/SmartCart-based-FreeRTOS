@@ -1,61 +1,12 @@
-/**
- ****************************************************************************************************
- * @file        key.h
- * @author      ÕıµãÔ­×ÓÍÅ¶Ó(ALIENTEK)
- * @version     V1.0
- * @date        2023-07-20
- * @brief       °´¼üÊäÈë Çı¶¯´úÂë
- * @license     Copyright (c) 2020-2032, ¹ãÖİÊĞĞÇÒíµç×Ó¿Æ¼¼ÓĞÏŞ¹«Ë¾
- ****************************************************************************************************
- * @attention
- *
- * ÊµÑéÆ½Ì¨:ÕıµãÔ­×Ó CH32V307¿ª·¢°å
- * ÔÚÏßÊÓÆµ:www.yuanzige.com
- * ¼¼ÊõÂÛÌ³:www.openedv.com
- * ¹«Ë¾ÍøÖ·:www.alientek.com
- * ¹ºÂòµØÖ·:openedv.taobao.com
- *
- * ĞŞ¸ÄËµÃ÷
- * V1.0 20230720
- * µÚÒ»´Î·¢²¼
- *
- ****************************************************************************************************
- */
-
 #ifndef __KEY_H
 #define __KEY_H
 
 #include "./SYSTEM/sys/sys.h"
 
-/******************************************************************************************/
+extern volatile uint8_t Key_Num;
 
-/* Òı½Å ¶¨Òå */
-#define KEY0_GPIO_PORT                  GPIOA
-#define KEY0_GPIO_PIN                   GPIO_Pin_1
-#define KEY0_GPIO_CLK_ENABLE()          do{ RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA,ENABLE); }while(0)   /* PA¿ÚÊ±ÖÓÊ¹ÄÜ */
-
-#define KEY1_GPIO_PORT                  GPIOC
-#define KEY1_GPIO_PIN                   GPIO_Pin_5
-#define KEY1_GPIO_CLK_ENABLE()          do{ RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOC,ENABLE); }while(0)   /* PC¿ÚÊ±ÖÓÊ¹ÄÜ */
-
-#define WKUP_GPIO_PORT                  GPIOA
-#define WKUP_GPIO_PIN                   GPIO_Pin_0
-#define WKUP_GPIO_CLK_ENABLE()          do{ RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA,ENABLE); }while(0)   /* PA¿ÚÊ±ÖÓÊ¹ÄÜ */
-
-/******************************************************************************************/
-
-#define KEY0        GPIO_ReadInputDataBit(KEY0_GPIO_PORT, KEY0_GPIO_PIN)     /* ¶ÁÈ¡KEY0Òı½Å */
-#define KEY1        GPIO_ReadInputDataBit(KEY1_GPIO_PORT, KEY1_GPIO_PIN)     /* ¶ÁÈ¡KEY1Òı½Å */
-#define WK_UP       GPIO_ReadInputDataBit(WKUP_GPIO_PORT, WKUP_GPIO_PIN)     /* ¶ÁÈ¡WKUPÒı½Å */
-
-#define KEY0_PRES    1                  /* KEY0°´ÏÂ */
-#define KEY1_PRES    2                  /* KEY1°´ÏÂ */
-#define WKUP_PRES    3                  /* KEY_UP°´ÏÂ(¼´WK_UP) */
-
-/******************************************************************************************/
-
-void key_init(void);                    /* °´¼ü³õÊ¼»¯º¯Êı */
-uint8_t key_scan(uint8_t mode);         /* °´¼üÉ¨Ãèº¯Êı */
+void key_init(void);                    /* æŒ‰é”®åˆå§‹åŒ–å‡½æ•° */
+uint8_t key_scan();         /* æŒ‰é”®æ‰«æå‡½æ•° */
 
 #endif
 

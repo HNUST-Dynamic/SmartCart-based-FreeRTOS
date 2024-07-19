@@ -1,31 +1,9 @@
-/**
- ****************************************************************************************************
- * @file        key.c
- * @author      正点原子团队(ALIENTEK)
- * @version     V1.0
- * @date        2023-07-20
- * @brief       按键输入 驱动代码
- * @license     Copyright (c) 2020-2032, 广州市星翼电子科技有限公司
- ****************************************************************************************************
- * @attention
- *
- * 实验平台:正点原子 CH32V307开发板
- * 在线视频:www.yuanzige.com
- * 技术论坛:www.openedv.com
- * 公司网址:www.alientek.com
- * 购买地址:openedv.taobao.com
- *
- * 修改说明
- * V1.0 20230720
- * 第一次发布
- *
- ****************************************************************************************************
- */
-
 #include "./BSP/KEY/key.h"
 #include "./SYSTEM/delay/delay.h"
+#include "FreeRTOS.h"
+#include "task.h"
 
-
+volatile uint8_t Key_Num=0;
 /**
  * @brief       按键初始化函数
  * @param       无
@@ -33,61 +11,64 @@
  */
 void key_init(void)
 {
-    GPIO_InitTypeDef gpio_init_struct;                          /* GPIO配置参数存储变量 */
-    KEY0_GPIO_CLK_ENABLE();                                     /* KEY0时钟使能 */
-    KEY1_GPIO_CLK_ENABLE();                                     /* KEY1时钟使能 */
-    WKUP_GPIO_CLK_ENABLE();                                     /* WKUP时钟使能 */
+    /*开启时钟*/
+    RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA, ENABLE);       //开启GPIOB的时钟
 
-    gpio_init_struct.GPIO_Pin = KEY0_GPIO_PIN;                  /* KEY0引脚 */
-    gpio_init_struct.GPIO_Mode = GPIO_Mode_IPU;                 /* 上拉输入 */
-    GPIO_Init(KEY0_GPIO_PORT, &gpio_init_struct);               /* KEY0引脚模式设置,上拉输入 */
-
-    gpio_init_struct.GPIO_Pin = KEY1_GPIO_PIN;                  /* KEY1引脚 */
-    gpio_init_struct.GPIO_Mode = GPIO_Mode_IPU;                 /* 上拉输入 */
-    GPIO_Init(KEY1_GPIO_PORT, &gpio_init_struct);               /* KEY1引脚模式设置,上拉输入 */
-
-    gpio_init_struct.GPIO_Pin = WKUP_GPIO_PIN;                  /* WKUP引脚 */
-    gpio_init_struct.GPIO_Mode = GPIO_Mode_IPD;                 /* 下拉输入 */
-    GPIO_Init(WKUP_GPIO_PORT, &gpio_init_struct);               /* WKUP引脚模式设置,下拉输入 */
+    /*GPIO初始化*/
+    GPIO_InitTypeDef GPIO_InitStructure;
+    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPU;
+    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_4 | GPIO_Pin_5| GPIO_Pin_6| GPIO_Pin_7| GPIO_Pin_11| GPIO_Pin_12;
+    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+    GPIO_Init(GPIOA, &GPIO_InitStructure);
 
 }
 
-/**
- * @brief       按键扫描函数
- * @note        该函数有响应优先级(同时按下多个按键): WK_UP > KEY1 > KEY0!!
- * @param       mode:0 / 1, 具体含义如下:
- *   @arg       0,  不支持连续按(当按键按下不放时, 只有第一次调用会返回键值,
- *                  必须松开以后, 再次按下才会返回其他键值)
- *   @arg       1,  支持连续按(当按键按下不放时, 每次调用该函数都会返回键值)
- * @retval      键值, 定义如下:
- *              KEY0_PRES, 1, KEY0按下
- *              KEY1_PRES, 2, KEY1按下
- *              WKUP_PRES, 3, WKUP按下
- */
-uint8_t key_scan(uint8_t mode)
+uint8_t key_scan()
 {
-    static uint8_t key_up = 1;  /* 按键按松开标志 */
-    uint8_t keyval = 0;
+    if (GPIO_ReadInputDataBit(GPIOA, GPIO_Pin_4) == 0)
+       {
+            vTaskDelay(10);
+            while (GPIO_ReadInputDataBit(GPIOA, GPIO_Pin_4) == 0);
+            vTaskDelay(10);
+            Key_Num = 2;
+       }
 
-    if (mode) key_up = 1;       /* 支持连按 */
-
-    if (key_up && (KEY0 == 0 || KEY1 == 0 || WK_UP == 1))  /* 按键松开标志为1, 且有任意一个按键按下了 */
-    {
-        delay_ms(10);           /* 去抖动 */
-        key_up = 0;
-
-        if (KEY0 == 0)  keyval = KEY0_PRES;
-
-        if (KEY1 == 0)  keyval = KEY1_PRES;
-
-        if (WK_UP == 1) keyval = WKUP_PRES;
-    }
-    else if (KEY0 == 1 && KEY1 == 1 && WK_UP == 0) /* 没有任何按键按下, 标记按键松开 */
-    {
-        key_up = 1;
-    }
-
-    return keyval;              /* 返回键值 */
+    if (GPIO_ReadInputDataBit(GPIOA, GPIO_Pin_5) == 0)
+       {
+            vTaskDelay(10);
+            while (GPIO_ReadInputDataBit(GPIOA, GPIO_Pin_5) == 0);
+            vTaskDelay(10);
+            Key_Num = 1;
+       }
+    if (GPIO_ReadInputDataBit(GPIOA, GPIO_Pin_6) == 0)
+        {
+            vTaskDelay(10);
+            while (GPIO_ReadInputDataBit(GPIOA, GPIO_Pin_6) == 0);
+            vTaskDelay(10);
+            Key_Num = 3;
+        }
+    if (GPIO_ReadInputDataBit(GPIOA, GPIO_Pin_7) == 0)
+        {
+            vTaskDelay(10);
+            while (GPIO_ReadInputDataBit(GPIOA, GPIO_Pin_7) == 0);
+            vTaskDelay(10);
+            Key_Num = 4;
+        }
+    if (GPIO_ReadInputDataBit(GPIOA, GPIO_Pin_11) == 0)
+        {
+            vTaskDelay(10);
+            while (GPIO_ReadInputDataBit(GPIOA, GPIO_Pin_11) == 0);
+            vTaskDelay(10);
+            Key_Num = 6;
+        }
+    if (GPIO_ReadInputDataBit(GPIOA, GPIO_Pin_12) == 0)
+        {
+            vTaskDelay(10);
+            while (GPIO_ReadInputDataBit(GPIOA, GPIO_Pin_12) == 0);
+            vTaskDelay(10);
+            Key_Num = 5;
+        }
+    return Key_Num;
 }
 
 

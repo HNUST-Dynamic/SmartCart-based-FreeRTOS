@@ -29,7 +29,16 @@ Drivers/BSP/KEY/key.o: F:/SmartCartRTOS/Drivers/BSP/KEY/key.c \
  F:\SmartCartRTOS\Drivers\CH32V30x_Driver\inc/ch32v30x_wwdg.h \
  F:\SmartCartRTOS\User/ch32v30x_it.h \
  F:\SmartCartRTOS\Drivers\CH32V30x_Driver\inc/ch32v30x_misc.h \
- f:\smartcartrtos\drivers\system\delay\delay.h
+ f:\smartcartrtos\drivers\system\delay\delay.h \
+ F:\SmartCartRTOS\Middlewares\FreeRTOS\include/FreeRTOS.h \
+ F:\SmartCartRTOS\User/FreeRTOSConfig.h \
+ F:\SmartCartRTOS\Middlewares\FreeRTOS\include/projdefs.h \
+ F:\SmartCartRTOS\Middlewares\FreeRTOS\include/portable.h \
+ F:\SmartCartRTOS\Middlewares\FreeRTOS\include/deprecated_definitions.h \
+ F:\SmartCartRTOS\Middlewares\FreeRTOS\portable\GCC\RISC-V/portmacro.h \
+ F:\SmartCartRTOS\Middlewares\FreeRTOS\include/mpu_wrappers.h \
+ F:\SmartCartRTOS\Middlewares\FreeRTOS\include/task.h \
+ F:\SmartCartRTOS\Middlewares\FreeRTOS\include/list.h
 
 f:\smartcartrtos\drivers\bsp\key\key.h:
 
@@ -92,3 +101,21 @@ F:\SmartCartRTOS\User/ch32v30x_it.h:
 F:\SmartCartRTOS\Drivers\CH32V30x_Driver\inc/ch32v30x_misc.h:
 
 f:\smartcartrtos\drivers\system\delay\delay.h:
+
+F:\SmartCartRTOS\Middlewares\FreeRTOS\include/FreeRTOS.h:
+
+F:\SmartCartRTOS\User/FreeRTOSConfig.h:
+
+F:\SmartCartRTOS\Middlewares\FreeRTOS\include/projdefs.h:
+
+F:\SmartCartRTOS\Middlewares\FreeRTOS\include/portable.h:
+
+F:\SmartCartRTOS\Middlewares\FreeRTOS\include/deprecated_definitions.h:
+
+F:\SmartCartRTOS\Middlewares\FreeRTOS\portable\GCC\RISC-V/portmacro.h:
+
+F:\SmartCartRTOS\Middlewares\FreeRTOS\include/mpu_wrappers.h:
+
+F:\SmartCartRTOS\Middlewares\FreeRTOS\include/task.h:
+
+F:\SmartCartRTOS\Middlewares\FreeRTOS\include/list.h:
