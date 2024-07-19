@@ -79,9 +79,10 @@ ProductInfoList ProductList;//商品列表
 void freertos_demo(void)
 {
     xBinarySemaphore = xSemaphoreCreateBinary();//创建二值信号量并传给句柄
-    xBinarySemaphore2 = xSemaphoreCreateBinary();
+    xBinarySemaphore2 = xSemaphoreCreateBinary();//add
     xBinarySemaphore3 = xSemaphoreCreateBinary();
-    xBinarySemaphore4 = xSemaphoreCreateBinary();
+    xBinarySemaphore4 = xSemaphoreCreateBinary(); 
+    xBinarySemaphore5 = xSemaphoreCreateBinary();//delete
     // 检查是否成功创建信号量
     if (xBinarySemaphore == NULL||xBinarySemaphore2 == NULL)
     {
@@ -187,8 +188,6 @@ void vKeyScanTask(void *pvParameters)
                     {
                         renderMainPage();
                     }
-                    //用完之后释放信号量
-                    xSemaphoreGive(xBinarySemaphore);
                 }
                 
             break;
@@ -205,6 +204,7 @@ void vKeyScanTask(void *pvParameters)
                             (UBaseType_t    )CAMERA_REV_PRIO,               /* 任务优先级 */
                             (TaskHandle_t*  )&CameraRev_Handler);           /* 任务句柄 */
 
+
                 // 等待信号量
                 if (xSemaphoreTake(xBinarySemaphore, portMAX_DELAY) == pdTRUE)
                 {
@@ -213,15 +213,20 @@ void vKeyScanTask(void *pvParameters)
                     if (xQueueReceive(xQueue3, &receivedProduct, portMAX_DELAY) == pdPASS)
                     {
                         // 处理接收到的 receivedProduct
-                        L610_Pub(receivedProduct.productID,"add");
+                        L610_Pub(receivedProduct.productID,"delete");
                         vTaskDelay(2000);
                         receivedProduct = L610_Recive();
+                        xQueueSend(xQueue4,&receivedProduct,portMAX_DELAY);
+                        xSemaphoreGive(xBinarySemaphore5);
                     }
                     Pages_X_delete(receivedProduct);
-                    deleteProduct(&ProductList,receivedProduct.productID);
-                    //用完之后释放信号量
-                    xSemaphoreGive(xBinarySemaphore);
-
+                    vTaskDelay(1000);
+                    xSemaphoreGive(xBinarySemaphore3);
+                    deleteProduct(&ProductList,receivedProduct);
+                    if(xSemaphoreTake(xBinarySemaphore4,portMAX_DELAY)==pdTRUE)
+                    {
+                        renderMainPage();
+                    }
                 }
                 
 
@@ -380,9 +385,25 @@ void vWeightTask(void *pvParameters)
                 FormerWeight=Weight;
                 xSemaphoreGive(xBinarySemaphore4);
             }
-            //用完之后释放信号量
-            xSemaphoreGive(xBinarySemaphore2);
-
         }
+        else if (xSemaphoreTake(xBinarySemaphore5, portMAX_DELAY) == pdTRUE)
+        {
+            //信号量被成功获取
+            //从队列中读取product
+            if (xQueueReceive(xQueue4, &weightProduct, portMAX_DELAY) == pdPASS)
+            {
+                if(!weight_check_delete(weightProduct))
+                {
+                    if(xSemaphoreTake(xBinarySemaphore3,portMAX_DELAY) == pdTRUE)
+                    {
+                        Pages_error();
+                        vTaskDelay(1000);
+                    } 
+                }
+                FormerWeight=Weight;
+                xSemaphoreGive(xBinarySemaphore4);
+            }
+        }
+
     }
 }

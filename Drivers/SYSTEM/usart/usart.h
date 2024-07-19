@@ -49,7 +49,7 @@ extern SemaphoreHandle_t xBinarySemaphore;//创建摄像头与按键扫描直接
 extern SemaphoreHandle_t xBinarySemaphore2;//创建上报后和weightcheck联系的二值信号量句柄
 extern SemaphoreHandle_t xBinarySemaphore3;//创建扫描后页面与重量错误的同步二值信号量句柄
 extern SemaphoreHandle_t xBinarySemaphore4;//创建显示重量错误与切回主页面的同步二值信号量句柄
-
+extern SemaphoreHandle_t xBinarySemaphore5;//创建上报后和weightcheck联系的二值信号量句柄 delete
 void USARTx_Init(void);
 void USART1_IRQHandler(void);
 void USART2_IRQHandler(void);

@@ -19,9 +19,10 @@ QueueHandle_t xQueue2;
 QueueHandle_t xQueue3;//用于摄像头和按键任务之间传递product的队列
 QueueHandle_t xQueue4;//用于发送上报后获取的product给weightcheck
 SemaphoreHandle_t xBinarySemaphore;//创建摄像头与按键扫描直接所用的二值信号量句柄
-SemaphoreHandle_t xBinarySemaphore2;//创建上报后和weightcheck联系的二值信号量句柄
+SemaphoreHandle_t xBinarySemaphore2;//创建上报后和weightcheck联系的二值信号量句柄 add
 SemaphoreHandle_t xBinarySemaphore3;//创建扫描后页面与重量错误的同步二值信号量句柄
 SemaphoreHandle_t xBinarySemaphore4;//创建显示重量错误与切回主页面的同步二值信号量句柄
+SemaphoreHandle_t xBinarySemaphore5;//创建上报后和weightcheck联系的二值信号量句柄 delete
 
 void USART1_IRQHandler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
 void USART2_IRQHandler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
