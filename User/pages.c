@@ -89,7 +89,7 @@ void Pages_X_add(ProductInfo product)
     char priceStr[MAX_STRING_LENGTH]; // 用于存储 productPrice 的字符串表示
     snprintf(priceStr, sizeof(priceStr), "%.2f", product.productPrices); // 将浮点数转换为字符串，保留两位小数
     LCD_ShowString(200, 200, 5*BIGCHAR, 32, 32,(u8*) priceStr);
-    delay_ms(4000);
+    vTaskDelay(4000);
     renderMainPage();
 }
 void Pages_delete()
@@ -125,7 +125,7 @@ void Pages_X_delete(ProductInfo product)
 //{
 //    LCD_Clear(GRAY);
 //    renderCurrentProductsPage();
-//    delay_ms(2000);
+//    vTaskDelay(2000);
 //    renderMainPage();
 //}
 void Pages_Pay()
@@ -201,6 +201,6 @@ void Pages_error()
     LCD_Clear(WHITE);
     LCD_Color_Fill(200,120,600,240,LGRAY );
     LCD_ShowString(200, 180, 13*BIGCHAR, 32, 32,"weight error!");
-    delay_ms(4000);
+    vTaskDelay(4000);
     renderMainPage();
 }

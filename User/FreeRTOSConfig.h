@@ -19,7 +19,7 @@
 #define configSUPPORT_DYNAMIC_ALLOCATION        1                               /* 1: 支持动态申请内存, 默认: 1 */
 #define configTOTAL_HEAP_SIZE			        ((size_t)(10 * 1024))           /* FreeRTOS堆中可用的RAM总量, 单位: Byte, 无默认需定义 */
 #define configMAX_TASK_NAME_LEN			        16                              /* 定义任务名最大字符数, 默认: 16 */
-#define configUSE_TRACE_FACILITY		        0                               /* 1: 使能可视化跟踪调试, 默认: 0 */
+#define configUSE_TRACE_FACILITY		        1                               /* 1: 使能可视化跟踪调试, 默认: 0 */
 #define configUSE_16_BIT_TICKS			        0                               /* 1: 定义系统时钟节拍计数器的数据类型为16位无符号数, 无默认需定义 */
 #define configIDLE_SHOULD_YIELD			        1                               /* 1: 使能在抢占式调度下,同优先级的任务能抢占空闲任务, 默认: 1 */
 #define configUSE_MUTEXES				        1                               /* 1: 使能互斥信号量, 默认: 0 */
@@ -31,13 +31,15 @@
 #define configUSE_COUNTING_SEMAPHORES	        1                               /* 1: 使能计数信号量, 默认: 0 */
 #define configGENERATE_RUN_TIME_STATS	        0                               /* 1: 使能任务运行时间统计功能, 默认: 0 */
 #define configUSE_PORT_OPTIMISED_TASK_SELECTION 0                               /* 1: 使用硬件计算下一个要运行的任务, 0: 使用软件算法计算下一个要运行的任务, 默认: 0 */
+#define configUSE_STATS_FORMATTING_FUNCTIONS    1
 
 #define configPRIO_BITS                         4
 #define configLIBRARY_LOWEST_INTERRUPT_PRIORITY 15
 #define configLIBRARY_MAX_SYSCALL_INTERRUPT_PRIORITY 5
 #define configKERNEL_INTERRUPT_PRIORITY         (configLIBRARY_LOWEST_INTERRUPT_PRIORITY<<(8-configPRIO_BITS))
 #define configMAX_SYSCALL_INTERRUPT_PRIORITY    (configLIBRARY_MAX_SYSCALL_INTERRUPT_PRIORITY<<(8-configPRIO_BITS))
- 
+
+
 /* 协程相关定义 */
 #define configUSE_CO_ROUTINES 			        0
 #define configMAX_CO_ROUTINE_PRIORITIES         2
@@ -61,7 +63,7 @@
 #define INCLUDE_xTaskAbortDelay				    1
 #define INCLUDE_xTaskGetHandle				    1
 #define INCLUDE_xSemaphoreGetMutexHolder	    1
-
+#define INCLUDE_uxTaskGetStackHighWaterMark     1
 /* 断言 */
 #define configASSERT( x ) if( ( x ) == 0 ) { taskDISABLE_INTERRUPTS(); printf("err at line %d of file \"%s\". \r\n ",__LINE__,__FILE__); while(1); }
 

@@ -13,7 +13,7 @@
 #include "allshow.h"
 #include "HX77.h"
 
-#define USART_RBUFFER_SIZE  1024
+#define USART_RBUFFER_SIZE  1536
 /******************************************************************************************************/
 /* FreeRTOS配置 */
 
@@ -21,7 +21,7 @@
  * 包括: 任务句柄 任务优先级 堆栈大小 创建任务
  */
 #define START_TASK_PRIO 1                   /* 任务优先级 */
-#define START_STK_SIZE  256                 /* 任务堆栈大小 */
+#define START_STK_SIZE  64                 /* 任务堆栈大小 */
 TaskHandle_t            StartTask_Handler;  /* 任务句柄 */
 void start_task(void *pvParameters);        /* 任务函数 */
 
@@ -29,7 +29,7 @@ void start_task(void *pvParameters);        /* 任务函数 */
  * 包括: 任务句柄 任务优先级 堆栈大小 创建任务
  */
 #define CAMERA_REV_PRIO      2                   /* 任务优先级 */
-#define CAMERA_REV_STK_SIZE  256                 /* 任务堆栈大小 */
+#define CAMERA_REV_STK_SIZE  200                 /* 任务堆栈大小 */
 TaskHandle_t            CameraRev_Handler;  /* 任务句柄 */
 void vCameraRev(void *pvParameters);             /* 任务函数 */
 
@@ -37,7 +37,7 @@ void vCameraRev(void *pvParameters);             /* 任务函数 */
  * 包括: 任务句柄 任务优先级 堆栈大小 创建任务
  */
 #define SERIAL_TASK_PRIO      2                   /* 任务优先级 */
-#define SERIAL_TASK_STK_SIZE  256                 /* 任务堆栈大小 */
+#define SERIAL_TASK_STK_SIZE  96                 /* 任务堆栈大小 */
 TaskHandle_t            SerialTask_Handler;  /* 任务句柄 */
 void vSerialTask(void *pvParameters);             /* 任务函数 */
 
@@ -45,7 +45,7 @@ void vSerialTask(void *pvParameters);             /* 任务函数 */
  * 包括: 任务句柄 任务优先级 堆栈大小 创建任务
  */
 #define LOOKUP_TASK_PRIO      2                   /* 任务优先级 */
-#define LOOKUP_TASK_STK_SIZE  256                 /* 任务堆栈大小 */
+#define LOOKUP_TASK_STK_SIZE  96                 /* 任务堆栈大小 */
 TaskHandle_t            LookupTask_Handler;  /* 任务句柄 */
 void vLookupTask(void *pvParameters);             /* 任务函数 */
 
@@ -53,7 +53,7 @@ void vLookupTask(void *pvParameters);             /* 任务函数 */
  * 包括: 任务句柄 任务优先级 堆栈大小 创建任务
  */
 #define KEYSCAN_TASK_PRIO      2                   /* 任务优先级 */
-#define KEYSCAN_TASK_STK_SIZE  512                 /* 任务堆栈大小 */
+#define KEYSCAN_TASK_STK_SIZE  600                 /* 任务堆栈大小 */
 TaskHandle_t            KeyScanTask_Handler;  /* 任务句柄 */
 void vKeyScanTask(void *pvParameters);             /* 任务函数 */
 
@@ -61,7 +61,7 @@ void vKeyScanTask(void *pvParameters);             /* 任务函数 */
  * 包括: 任务句柄 任务优先级 堆栈大小 创建任务
  */
 #define WEIGHT_TASK_PRIO      2                   /* 任务优先级 */
-#define WEIGHT_TASK_STK_SIZE  256                 /* 任务堆栈大小 */
+#define WEIGHT_TASK_STK_SIZE  64                 /* 任务堆栈大小 */
 TaskHandle_t            WeightTask_Handler;  /* 任务句柄 */
 void vWeightTask(void *pvParameters);             /* 任务函数 */
 
@@ -86,7 +86,7 @@ void freertos_demo(void)
     // 检查是否成功创建信号量
     if (xBinarySemaphore == NULL||xBinarySemaphore2 == NULL)
     {
-        printf("创建二值信号量失败");
+        printf("创建二值信号量失败\r\n");
     }
     xQueue1 = xQueueCreate(32, sizeof(uint8_t));
     xQueue2 = xQueueCreate(USART_RBUFFER_SIZE, sizeof(uint8_t));
@@ -97,7 +97,7 @@ void freertos_demo(void)
         // 处理队列创建失败
         while (1)
         {
-            printf("创建队列失败");
+            printf("创建队列失败\r\n");
         }
     }
     initProductList(&ProductList);
@@ -118,6 +118,7 @@ void freertos_demo(void)
  */
 void start_task(void *pvParameters)
 {
+
     taskENTER_CRITICAL();           /* 进入临界区 */
         
     renderMainPage();
@@ -135,8 +136,21 @@ void start_task(void *pvParameters)
                 (void*          )NULL,                          /* 传入给任务函数的参数 */
                 (UBaseType_t    )LOOKUP_TASK_PRIO,              /* 任务优先级 */
                 (TaskHandle_t*  )&LookupTask_Handler);          /* 任务句柄 */
+    
+    //创建摄像头任务
+    xTaskCreate((TaskFunction_t )vCameraRev,                    /* 任务函数 */
+                (const char*    )"CameraRev",                   /* 任务名称 */
+                (uint16_t       )CAMERA_REV_STK_SIZE,           /* 任务堆栈大小 */
+                (void*          )NULL,                          /* 传入给任务函数的参数 */
+                (UBaseType_t    )CAMERA_REV_PRIO,               /* 任务优先级 */
+                (TaskHandle_t*  )&CameraRev_Handler);           /* 任务句柄 */
+    vTaskSuspend(CameraRev_Handler);
+
+
     vTaskDelete(StartTask_Handler);                             /* 删除开始任务 */
     taskEXIT_CRITICAL();                                        /* 退出临界区 */
+
+
 }
 
 /**
@@ -146,6 +160,7 @@ void start_task(void *pvParameters)
  */
 void vKeyScanTask(void *pvParameters)
 {
+    printf("Key scan\r\n");
     ProductInfo receivedProduct;
     while(1)
     {
@@ -158,13 +173,7 @@ void vKeyScanTask(void *pvParameters)
                 //渲染扫描提示
                 Pages_add();
 
-                //创建摄像头任务
-                xTaskCreate((TaskFunction_t )vCameraRev,                    /* 任务函数 */
-                            (const char*    )"CameraRev",                   /* 任务名称 */
-                            (uint16_t       )CAMERA_REV_STK_SIZE,           /* 任务堆栈大小 */
-                            (void*          )NULL,                          /* 传入给任务函数的参数 */
-                            (UBaseType_t    )CAMERA_REV_PRIO,               /* 任务优先级 */
-                            (TaskHandle_t*  )&CameraRev_Handler);           /* 任务句柄 */
+                vTaskResume(CameraRev_Handler);
 
                 // 等待信号量
                 if (xSemaphoreTake(xBinarySemaphore, portMAX_DELAY) == pdTRUE)
@@ -175,8 +184,14 @@ void vKeyScanTask(void *pvParameters)
                     {
                         // 处理接收到的 receivedProduct
                         L610_Pub(receivedProduct.productID,"delete");
-                        vTaskDelay(2000);
+                        vTaskDelay(3000);
                         receivedProduct = L610_Recive();
+                        printf("%s\r\n",receivedProduct.productName);
+
+                        // char taskListBuffer[512];
+                        // vTaskList(taskListBuffer);
+                        // printf("Task List:\n%s", taskListBuffer);
+
                         xQueueSend(xQueue4,&receivedProduct,portMAX_DELAY);
                         xSemaphoreGive(xBinarySemaphore2);
                     }
@@ -184,6 +199,7 @@ void vKeyScanTask(void *pvParameters)
                     vTaskDelay(1000);
                     xSemaphoreGive(xBinarySemaphore3);
                     insertProduct(&ProductList,receivedProduct);
+
                     if(xSemaphoreTake(xBinarySemaphore4,portMAX_DELAY)==pdTRUE)
                     {
                         renderMainPage();
@@ -196,14 +212,7 @@ void vKeyScanTask(void *pvParameters)
                 //渲染扫描提示
                 Pages_delete();
 
-                //创建摄像头任务
-                xTaskCreate((TaskFunction_t )vCameraRev,                    /* 任务函数 */
-                            (const char*    )"CameraRev",                   /* 任务名称 */
-                            (uint16_t       )CAMERA_REV_STK_SIZE,           /* 任务堆栈大小 */
-                            (void*          )NULL,                          /* 传入给任务函数的参数 */
-                            (UBaseType_t    )CAMERA_REV_PRIO,               /* 任务优先级 */
-                            (TaskHandle_t*  )&CameraRev_Handler);           /* 任务句柄 */
-
+                vTaskResume(CameraRev_Handler);
 
                 // 等待信号量
                 if (xSemaphoreTake(xBinarySemaphore, portMAX_DELAY) == pdTRUE)
@@ -213,7 +222,7 @@ void vKeyScanTask(void *pvParameters)
                     if (xQueueReceive(xQueue3, &receivedProduct, portMAX_DELAY) == pdPASS)
                     {
                         // 处理接收到的 receivedProduct
-                        L610_Pub(receivedProduct.productID,"delete");
+                        L610_Pub(receivedProduct.productID,"add");
                         vTaskDelay(2000);
                         receivedProduct = L610_Recive();
                         xQueueSend(xQueue4,&receivedProduct,portMAX_DELAY);
@@ -222,15 +231,12 @@ void vKeyScanTask(void *pvParameters)
                     Pages_X_delete(receivedProduct);
                     vTaskDelay(1000);
                     xSemaphoreGive(xBinarySemaphore3);
-                    deleteProduct(&ProductList,receivedProduct);
+                    deleteProduct(&ProductList,receivedProduct.productID);
                     if(xSemaphoreTake(xBinarySemaphore4,portMAX_DELAY)==pdTRUE)
                     {
                         renderMainPage();
                     }
                 }
-                
-
-
             break;
 
             case 3://返回
@@ -261,10 +267,11 @@ void vKeyScanTask(void *pvParameters)
  */
 void vCameraRev(void *pvParameters)
 {
-    
+    uint8_t received_data;
+    ProductInfo product;
     while (1)
     {
-        uint8_t received_data;
+        
         USART_Cmd(USART1,ENABLE);
         if (xQueueReceive(xQueue1, &received_data, portMAX_DELAY) == pdPASS)
         {
@@ -277,15 +284,16 @@ void vCameraRev(void *pvParameters)
             }
             if(received_data=='\n')                                                         // 检查是否接收到换行符
             {
-                ProductInfo product;
+                
                 strncpy(product.productID, (char*)uart_buf, sizeof(product.productID) - 1); //将接收到的ID赋值给product
                 product.productID[sizeof(product.productID) - 1] = '\0';                    //确保字符串以空字符结尾
-                xSemaphoreGive(xBinarySemaphore);                                           //释放信号量
+                
                 xQueueSend(xQueue3,&product,portMAX_DELAY);                                 //将product通过队列传出去
+                xSemaphoreGive(xBinarySemaphore);                                           //释放信号量
                 uart_cnt = 0;                                                               //清除缓冲区
                 memset(uart_buf,0,sizeof(uart_buf));
                 USART_Cmd(USART1,DISABLE);                                                  //接收完删除任务
-                vTaskDelete(NULL);                
+                vTaskSuspend(CameraRev_Handler);                
             }
         }
     }
@@ -301,10 +309,8 @@ void vSerialTask(void *pvParameters)
     uint8_t receivedData;
     while (1)
     {
-        
         if (xQueueReceive(xQueue2, &receivedData, portMAX_DELAY) == pdPASS) // 从队列中接收数据（阻塞）
         {
-            
             if (USART_Rbuffer_Num < USART_RBUFFER_SIZE)                     // 将数据存储到缓冲区
             {
                 USART_Rbuffer[USART_Rbuffer_Num++] = receivedData;
@@ -319,15 +325,13 @@ void vSerialTask(void *pvParameters)
  * @retval      无
  */
 void vLookupTask(void *pvParameters)
-{    
+{   
     L610_Init();
     L610_Lookup();
     L610_RequestIP();
     L610_SetAndConnect();
     L610_Sub();
-    // L610_Pub("apple","delete");
-    // vTaskDelay(2000);
-    // L610_Recive();
+    
 
     /* 创建按键扫描任务 */
     xTaskCreate((TaskFunction_t )vKeyScanTask,                  /* 任务函数 */
@@ -336,7 +340,7 @@ void vLookupTask(void *pvParameters)
                 (void*          )NULL,                          /* 传入给任务函数的参数 */
                 (UBaseType_t    )KEYSCAN_TASK_PRIO,             /* 任务优先级 */
                 (TaskHandle_t*  )&KeyScanTask_Handler);         /* 任务句柄 */
-
+    
     xTaskCreate((TaskFunction_t )vWeightTask,                  /* 任务函数 */
                 (const char*    )"WeightTask",                 /* 任务名称 */
                 (uint16_t       )WEIGHT_TASK_STK_SIZE,         /* 任务堆栈大小 */
@@ -344,8 +348,7 @@ void vLookupTask(void *pvParameters)
                 (UBaseType_t    )WEIGHT_TASK_PRIO,             /* 任务优先级 */
                 (TaskHandle_t*  )&WeightTask_Handler);         /* 任务句柄 */
 
-
-    vTaskDelete(LookupTask_Handler);                             // 删除任务
+    vTaskDelete(NULL);                             // 删除任务
 }
 
 /**
@@ -355,6 +358,7 @@ void vLookupTask(void *pvParameters)
  */
 void vWeightTask(void *pvParameters)
 {
+
     HX711_GPIO_Init();
     uint32_t pi=HX711_ReadData();
     uint32_t Weight,FormerWeight;
@@ -404,6 +408,5 @@ void vWeightTask(void *pvParameters)
                 xSemaphoreGive(xBinarySemaphore4);
             }
         }
-
     }
 }
